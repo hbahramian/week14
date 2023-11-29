@@ -1,53 +1,66 @@
-import { View, Text, StyleSheet, Button } from "react-native"
-import React, { useEffect } from "react"
+import { View, Text, StyleSheet, Button } from "react-native";
+import React, { useEffect, useState } from "react";
 import { NavigationProp } from "@react-navigation/native";
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../FirebaseConfig";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, onSnapshot } from "firebase/firestore";
 
 interface RouterProps {
-    navigation: NavigationProp<any, any>;
+  navigation: NavigationProp<any, any>;
 }
 
-const Home = ({ navigation }: RouterProps ) => {
+const Home = ({ navigation }: RouterProps) => {
+  const [notes, setNotes] = useState<any[]>([]);
 
-    useEffect(() => {
-       
-    }, []);
+  useEffect(() => {
+    console.log('in useEffect in Home');
+    
+    const notesTable = collection(FIREBASE_DB, "notes");
+    const subscriber = onSnapshot(notesTable, {
+      next: (snapshot) => {
+        console.log("updated!");
 
-    const addNote = async () => {
-        console.log('====================================');
-        console.log('in addNote');
-        console.log('====================================');
-        const note = addDoc(collection(FIREBASE_DB, 'notes'), {
-            title: 'test 1',
-            done: false
+        const documents: any[] = [];
+        snapshot.docs.forEach((note) => {
+          documents.push({
+            id: note.id,
+            ...note.data(),
+          });
         });
-        console.log(note);
-        
-        
-    }
+        setNotes(documents);
+      },
+    });
+    //return () => subscriber();
+  }, []);
 
-    return (
-        <View style={styles.container}> 
-         <Button title="Add note" onPress={() => {
-                addNote()
-            }} />
-         <Button title="Open Details" onPress={() => {
-               navigation.navigate('Details')
-            }} />
-            <Button title="Logout" onPress={() => {
-                FIREBASE_AUTH.signOut()
-            }} />
-        </View>
-    )
-}
+  return (
+    <View style={styles.container}>
+      <View>
+        {notes.map((note) => (
+          <Text key={note.id}>{note.title}</Text>
+        ))}
+      </View>
+      <Button
+        title="Add Note"
+        onPress={() => {
+          navigation.navigate("note");
+        }}
+      />
+      <Button
+        title="Logout"
+        onPress={() => {
+          FIREBASE_AUTH.signOut();
+        }}
+      />
+    </View>
+  );
+};
 
 export default Home;
 
 const styles = StyleSheet.create({
-    container: {
-      marginHorizontal: 20,
-      flex: 1,
-      justifyContent: "center",
-    }
-  });
+  container: {
+    marginHorizontal: 20,
+    flex: 1,
+    justifyContent: "center",
+  },
+});

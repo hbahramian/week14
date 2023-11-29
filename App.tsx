@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { FIREBASE_AUTH } from "./FirebaseConfig";
 import Detail from "./app/screens/Detail";
+import Note from "./app/screens/Note";
 
 const Stack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -14,8 +15,8 @@ const HomeStack = createNativeStackNavigator();
 function HomeLayout() {
   return (
     <HomeStack.Navigator>
-      <HomeStack.Screen name="home" component={Home} options={{headerShown: false}} />
-      <HomeStack.Screen name="Details" component={Detail} options={{headerShown: true}} />
+      <HomeStack.Screen name="notes" component={Home} options={{headerShown: false}} />
+      <HomeStack.Screen name="note" component={Note} options={{headerShown: true, headerTitle: ''}} />
     </HomeStack.Navigator>
   );
 }
