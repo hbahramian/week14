@@ -15,7 +15,7 @@ function HomeLayout() {
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen name="home" component={Home} options={{headerShown: false}} />
-      <HomeStack.Screen name="details" component={Detail} options={{headerShown: false}} />
+      <HomeStack.Screen name="Details" component={Detail} options={{headerShown: true}} />
     </HomeStack.Navigator>
   );
 }
