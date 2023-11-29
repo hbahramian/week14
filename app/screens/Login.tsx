@@ -5,6 +5,7 @@ import {
   TextInput,
   ActivityIndicator,
   Button,
+  KeyboardAvoidingView,
 } from "react-native";
 import React, { useState } from "react";
 import { FIREBASE_AUTH } from "../../FirebaseConfig";
@@ -51,27 +52,33 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={(text) => setEmail(text)}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry={true}
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-      />
-      {loading ? (
-        <ActivityIndicator size="large" />
-      ) : (
-        <>
-          <Button style={styles.button} title="Login" onPress={signIn} />
-          <Button style={styles.button} title="Create account" onPress={signUp} />
-        </>
-      )}
+      <KeyboardAvoidingView behavior="padding">
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry={true}
+          value={password}
+          onChangeText={(text) => setPassword(text)}
+        />
+        {loading ? (
+          <ActivityIndicator size="large" />
+        ) : (
+          <>
+            <Button style={styles.button} title="Login" onPress={signIn} />
+            <Button
+              style={styles.button}
+              title="Create account"
+              onPress={signUp}
+            />
+          </>
+        )}
+      </KeyboardAvoidingView>
     </View>
   );
 };
@@ -92,8 +99,8 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#fff",
   },
-  button: {  
-    margin: 10, 
-    padding: 10    
+  button: {
+    margin: 10,
+    padding: 10,
   },
 });

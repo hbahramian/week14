@@ -1,18 +1,55 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import Login from './app/screens/Login';
+import Login from "./app/screens/Login";
+import Home from "./app/screens/Home";
+import React, { useEffect, useState } from "react";
+import { User, onAuthStateChanged } from "firebase/auth";
+import { FIREBASE_AUTH } from "./FirebaseConfig";
+import Detail from "./app/screens/Detail";
 
 const Stack = createNativeStackNavigator();
+const HomeStack = createNativeStackNavigator();
 
-export default function App() {
+function HomeLayout() {
   return (
-  <NavigationContainer>
-     <Stack.Navigator initialRouteName='Login'>
-      <Stack.Screen name='login' component={Login} options={{headerShown: false}} />
-     </Stack.Navigator>
-  </NavigationContainer>
+    <HomeStack.Navigator>
+      <HomeStack.Screen name="home" component={Home} options={{headerShown: false}} />
+      <HomeStack.Screen name="details" component={Detail} options={{headerShown: false}} />
+    </HomeStack.Navigator>
   );
 }
 
 
+
+export default function App() {
+  const [user, setUser] = useState<User | null>(null);
+  useEffect(() => {
+    onAuthStateChanged(FIREBASE_AUTH, (user) => {
+      setUser(user)
+      console.log("====================================");
+      console.log("user", user);
+      console.log("====================================");
+    });
+  }, []);
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login">
+        {user ?
+        (<Stack.Screen
+          name="home"
+          component={HomeLayout}
+          options={{ headerShown: false }}
+        />)
+        :
+        (<Stack.Screen
+          name="login"
+          component={Login}
+          options={{ headerShown: false }}
+        />)
+        }
+        
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
