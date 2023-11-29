@@ -1,10 +1,17 @@
-import { View, Text, StyleSheet, Button, FlatList, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { NavigationProp } from "@react-navigation/native";
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../FirebaseConfig";
-import { addDoc, collection, onSnapshot } from "firebase/firestore";
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { Entypo } from '@expo/vector-icons';
+import { addDoc, collection, deleteDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { Entypo } from "@expo/vector-icons";
 
 interface RouterProps {
   navigation: NavigationProp<any, any>;
@@ -41,22 +48,31 @@ const Home = ({ navigation }: RouterProps) => {
   }, []);
 
   const renderNote = ({ item }: any) => {
-    return (
+    const noteReference = doc(FIREBASE_DB, `notes/${item.id}`)
+    const toggleDone = async () => {updateDoc(noteReference, {done: 'done'})}
+    const deleteItem = async () => {deleteDoc(noteReference)}
 
+
+
+    return (
       <View style={styles.noteContainer}>
-        <TouchableOpacity style={styles.note}>
-        {item.done == 'done' && <Ionicons name="md-checkmark-circle" size={32} color="green" />}  
-        {item.done != 'done' && <Entypo name="progress-two" size={24} color="black" />}  
-        <Text style={styles.noteText}>{item.title}</Text>
+        <TouchableOpacity onPress={toggleDone} style={styles.note}>
+          {item.done == "done" && (
+            <Ionicons name="md-checkmark-circle" size={32} color="green" />
+          )}
+          {item.done != "done" && (
+            <Entypo name="progress-two" size={24} color="black" />
+          )}
+          <Text style={styles.noteText}>{item.title}</Text>
         </TouchableOpacity>
-        <Ionicons name="trash-outline" size={24} color="black" />
+        <Ionicons name="trash-outline" size={24} color="black" onPress={deleteItem}/>
       </View>
     );
   };
 
   return (
     <View style={styles.container}>
-      <FlatList 
+      <FlatList
         style={{ paddingTop: 50 }}
         data={notes}
         renderItem={renderNote}
@@ -87,19 +103,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   noteContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10, 
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
     marginVertical: 4,
-    backgroundColor: 'azure'
+    backgroundColor: "azure",
   },
   note: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center'
+    flexDirection: "row",
+    alignItems: "center",
   },
   noteText: {
-   flex: 1,
-   paddingHorizontal: 10
-  }
+    flex: 1,
+    paddingHorizontal: 10,
+  },
 });
