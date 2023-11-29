@@ -1,8 +1,10 @@
-import { View, Text, StyleSheet, Button, FlatList } from "react-native";
+import { View, Text, StyleSheet, Button, FlatList, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import { NavigationProp } from "@react-navigation/native";
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../FirebaseConfig";
 import { addDoc, collection, onSnapshot } from "firebase/firestore";
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Entypo } from '@expo/vector-icons';
 
 interface RouterProps {
   navigation: NavigationProp<any, any>;
@@ -39,12 +41,23 @@ const Home = ({ navigation }: RouterProps) => {
   }, []);
 
   const renderNote = ({ item }: any) => {
-    return <Text>{item.title}</Text>;
+    return (
+
+      <View style={styles.noteContainer}>
+        <TouchableOpacity style={styles.note}>
+        {item.done == 'done' && <Ionicons name="md-checkmark-circle" size={32} color="green" />}  
+        {item.done != 'done' && <Entypo name="progress-two" size={24} color="black" />}  
+        <Text style={styles.noteText}>{item.title}</Text>
+        </TouchableOpacity>
+        <Ionicons name="trash-outline" size={24} color="black" />
+      </View>
+    );
   };
 
   return (
     <View style={styles.container}>
-      <FlatList style={{paddingTop: 50}}
+      <FlatList 
+        style={{ paddingTop: 50 }}
         data={notes}
         renderItem={renderNote}
         keyExtractor={(note: Note) => note.id}
@@ -73,4 +86,20 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
   },
+  noteContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10, 
+    marginVertical: 4,
+    backgroundColor: 'azure'
+  },
+  note: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  noteText: {
+   flex: 1,
+   paddingHorizontal: 10
+  }
 });
