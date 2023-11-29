@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet, Button, FlatList } from "react-native";
 import React, { useEffect, useState } from "react";
 import { NavigationProp } from "@react-navigation/native";
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../FirebaseConfig";
@@ -8,23 +8,29 @@ interface RouterProps {
   navigation: NavigationProp<any, any>;
 }
 
+interface Note {
+  title: string;
+  done: string;
+  id: string;
+}
+
 const Home = ({ navigation }: RouterProps) => {
-  const [notes, setNotes] = useState<any[]>([]);
+  const [notes, setNotes] = useState<Note[]>([]);
 
   useEffect(() => {
-    console.log('in useEffect in Home');
-    
+    console.log("in useEffect in Home");
+
     const notesTable = collection(FIREBASE_DB, "notes");
     const subscriber = onSnapshot(notesTable, {
       next: (snapshot) => {
         console.log("updated!");
 
-        const documents: any[] = [];
+        const documents: Note[] = [];
         snapshot.docs.forEach((note) => {
           documents.push({
             id: note.id,
             ...note.data(),
-          });
+          } as Note);
         });
         setNotes(documents);
       },
@@ -32,13 +38,17 @@ const Home = ({ navigation }: RouterProps) => {
     //return () => subscriber();
   }, []);
 
+  const renderNote = ({ item }: any) => {
+    return <Text>{item.title}</Text>;
+  };
+
   return (
     <View style={styles.container}>
-      <View>
-        {notes.map((note) => (
-          <Text key={note.id}>{note.title}</Text>
-        ))}
-      </View>
+      <FlatList style={{paddingTop: 50}}
+        data={notes}
+        renderItem={renderNote}
+        keyExtractor={(note: Note) => note.id}
+      />
       <Button
         title="Add Note"
         onPress={() => {
