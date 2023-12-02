@@ -74,7 +74,7 @@ const Home = ({ navigation }: RouterProps) => {
     <View style={styles.container}>
       <FlatList
         style={{ paddingTop: 50 }}
-        data={notes}
+        data={notes.sort((a,b) => a.done.localeCompare(b.done))}
         renderItem={renderNote}
         keyExtractor={(note: Note) => note.id}
       />
